@@ -1,0 +1,16 @@
+#!/bin/bash
+# creates plots in studies/DSM_change_effect_on_wdists
+
+mkdir -p DSM_change_effect_on_wdists
+pushd ..
+for t in "All" "JP0" "JP1" "JP2" "LgBS1" "LgBS2" "LgBS3" "SmBS1" "SmBS2" "SmBS3" "DiJP" "DiBS"; do
+  export TRIGGER_TYPE="$t"
+  echo "TRIGGER_TYPE=$TRIGGER_TYPE"
+  ./loop_PhiDists
+  ./wait_for_condor
+  root -b -q toa_add.C'(0,1)'
+  mv phiset/all.root studies/DSM_change_effect_on_wdists/${TRIGGER_TYPE}_before.root
+  root -b -q toa_add.C'(0,2)'
+  mv phiset/all.root studies/DSM_change_effect_on_wdists/${TRIGGER_TYPE}_after.root
+done
+popd

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+file="trigid.dat"
+dbserver="onldb.starp.bnl.gov"
+dbport=3501
+
+
+> $file
+while read line; do
+  run=$(echo $line | awk '{print $2}')
+  echo $run
+  mysql --skip-column-names --host $dbserver --port $dbport Conditions_rts -e\
+  "SELECT idx_rn,idx_trigger,name FROM triggers WHERE idx_rn=${run}"\
+  | grep FMS \
+  | grep -v FMS_RP \
+  | sed 's/\t/ /g' \
+  >> $file
+done < culled_run_list.txt

@@ -1,0 +1,12 @@
+Executable = /builds/root/bin/root
+Universe = vanilla
+notification = never
+getenv = True
++Experiment = "star"
++Job_Type = "cas"
+
+Arguments = -b -q Diagnostics.C(\"EOR\")
+Log    = logfiles/Diag1.log
+Output = logfiles/Diag1.out
+Error  = logfiles/Diag1.err
+Queue

@@ -1,0 +1,26 @@
+#!/bin/bash
+# runs double and single spin analyses for specific range of runs, specified
+# by "div.dat", which is created from "Read_pi0cnt.C", which uses the output
+# of "Count_pi0s.C" to divide the data evenly by number of pi0s observed;
+
+mkdir -p study_runs
+rm -r study_runs
+mkdir -p study_runs
+
+touch three.png
+rm three.png
+
+> chisq
+num=1
+
+while read line; do
+  run_low=$(echo $line | awk '{print $1}')
+  run_high=$(echo $line | awk '{print $2}')
+
+  echo $run_low $run_high $num
+  root -b -q -l 'Asym3.C('\"pi0\"','\"run\"','$run_low','$run_high')'
+  root -b -q -l 'DrawThree.C('\"pi0\"')'
+  mv -v spin.root study_runs/spin_$run_low-$run_high.root
+  mv -v three.png study_runs/three_$run_low-$run_high.png
+  let num++
+done < div.dat

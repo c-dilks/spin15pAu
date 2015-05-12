@@ -1,0 +1,22 @@
+#!/bin/bash
+# set up analysis directory and build source code
+
+# make data dirs
+mkdir -pv logfiles
+mkdir -pv pdfset
+mkdir -pv phiset
+
+# create redset symlink
+if [ ! -e "../../redset" ]; then mkdir -pv ../../redset; fi
+touch redset; rm redset
+ln -sv ../../redset ./
+ln -sv ../scalers15t/counts.root ./
+ln -sv ../scalers15t/rtree.root ./
+ln -sv ../polar15t/pol.root ./
+
+# build source code
+pushd src > /dev/null
+echo "building source code..."
+make clean
+make && echo "build ok!"
+popd > /dev/null

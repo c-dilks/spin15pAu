@@ -1,0 +1,52 @@
+#!/bin/bash
+# runs double and single spin analyses for specific range of runs, then draws output
+# use argument "iter" to control number of runs per asymmetry calculation
+
+root -b -q 'PrintConsistentFills.C'
+mkdir -p study_runs
+rm -r study_runs
+mkdir -p study_runs
+
+touch three.png
+rm three.png
+
+# iter := number of runs per asym_call
+if [ $# -gt 0 ]; then
+  iter=$1
+else
+  iter=300
+fi
+
+cnt=1
+runcode=0
+
+> chisq
+num=1
+
+while read run; do
+  if [ $cnt -eq 1 ]; then
+    run_low=$run
+    let cnt++
+  elif [ $cnt -eq $iter ]; then
+    run_high=$run
+    runcode=1
+    cnt=1
+  elif [ $run -eq 17601 ]; then
+    run_high=$run
+    runcode=1
+    cnt=1
+  else
+    let cnt++
+  fi
+
+  if [ $runcode -eq 1 ]; then
+    echo $run_low $run_high
+    root -b -q -l 'Asym3.C('\"pi0\"','\"run\"','$run_low','$run_high')'
+    root -b -q -l 'DrawThree.C('\"pi0\"')'
+    root -b -q -l 'ChiSquareOfFit.C('$num')'
+    mv -v spin.root study_runs/spin_$run_low-$run_high.root
+    mv -v three.png study_runs/three_$run_low-$run_high.png
+    runcode=0
+    let num++
+  fi
+done < runnum_list

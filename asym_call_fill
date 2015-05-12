@@ -1,0 +1,53 @@
+#!/bin/bash
+# runs double and single spin analyses for specific range of fills, then draws output
+# use argument "iter" to control number of fills per asymmetry calculation (default is 5 fills)
+
+root -b -q 'PrintConsistentFills.C'
+mkdir -p study_fill
+rm -r study_fill
+mkdir -p study_fill
+
+touch three.png
+rm three.png
+
+# iter := number of fills per asym_call
+if [ $# -gt 0 ]; then
+  iter=$1
+else
+  iter=5
+fi
+
+cnt=1
+runcode=0
+
+> chisq
+num=1
+
+while read fill; do
+  if [ $cnt -eq 1 ]; then
+    fill_low=$fill
+    let cnt++
+  elif [ $cnt -eq $iter ]; then
+    fill_high=$fill
+    runcode=1
+    cnt=1
+  elif [ $fill -eq 17601 ]; then
+    fill_high=$fill
+    runcode=1
+    cnt=1
+  else
+    let cnt++
+  fi
+
+
+  if [ $runcode -eq 1 ]; then
+    echo $fill_low $fill_high
+    root -b -q -l 'Asym3.C('\"pi0\"','\"fill\"','$fill_low','$fill_high')'
+    root -b -q -l 'DrawThree.C('\"pi0\"')'
+    root -b -q -l 'ChiSquareOfFit.C('$num')'
+    mv -v spin.root study_fill/spin_$fill_low-$fill_high.root
+    mv -v three.png study_fill/three_$fill_low-$fill_high.png
+    runcode=0
+    let num++
+  fi
+done < fill_list

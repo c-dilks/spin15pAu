@@ -1,2 +1,2 @@
-# spin15pAu
-run 15 pAu spin code
+# spin15t
+run 15t spin code

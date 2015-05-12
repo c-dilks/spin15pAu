@@ -1,0 +1,5 @@
+#!/bin/bash
+# runs double and single spin analyses, and draws output
+# this script filters out a region of runs
+root -b -q -l 'Asym3.C('\"pi0\"','\"runout\"',14136002,14139001)'
+root -b -q -l 'DrawThree.C('\"pi0\"')'

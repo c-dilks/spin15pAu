@@ -1,0 +1,72 @@
+#!/bin/bash
+# produces asymmetry plots for webpage
+
+phibins=10
+
+# en-dependence
+root -b -q Bin_Splitter.C'('${phibins}',1,1,0)'
+source env_bins.sh
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_en
+
+# pt-dependence
+root -b -q Bin_Splitter.C'('${phibins}',1,0,1)'
+source env_bins.sh
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_pt
+
+# en-dependence for 3 pt regions
+root -b -q Bin_Splitter.C'('${phibins}',1,1,0)'
+source env_bins.sh
+export PT_DIV_0=0
+export PT_DIV_1=3.3
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_en_lowpt
+export PT_DIV_0=3.3
+export PT_DIV_1=6.7
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_en_midpt
+export PT_DIV_0=6.7
+export PT_DIV_1=10
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_en_highpt
+
+# pt-dependence for 3 en regions
+root -b -q Bin_Splitter.C'('${phibins}',1,0,1)'
+source env_bins.sh
+export EN_DIV_0=0
+export EN_DIV_1=33.3
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_pt_lowen
+export EN_DIV_0=33.3
+export EN_DIV_1=66.7
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_pt_miden
+export EN_DIV_0=66.7
+export EN_DIV_1=100
+echo PT_BINS=$PT_BINS EN_BINS=$EN_BINS PT_DIV_0=$PT_DIV_0 EN_DIV_0=$EN_DIV_0
+./loop_PhiDists
+./wait_for_condor
+root -b -q toa_add.C
+./asym_call_jets asym_plots/output_${TRIGGER_TYPE}_pt_highen
